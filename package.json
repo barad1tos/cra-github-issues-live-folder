@@ -1,0 +1,11 @@
+{
+  "name": "cra-github-issues",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "typescript": "7.0.2"
+  }
+}
