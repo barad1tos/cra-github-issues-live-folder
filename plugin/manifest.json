@@ -1,0 +1,13 @@
+{
+  "id": "barad1tos.github-issues",
+  "name": "GitHub Issues",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "entry": "main.js",
+  "command": {
+    "title": "New GitHub Issues Live Folder",
+    "description": "Show open issues from repositories you own.",
+    "triggers": ["github issues", "open issues", "live folder"]
+  },
+  "sessionOrigins": ["https://github.com"]
+}
