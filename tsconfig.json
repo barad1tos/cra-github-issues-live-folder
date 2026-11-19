@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "module": "NodeNext",
+    "moduleDetection": "legacy",
+    "rootDir": "plugin",
+    "types": [],
+    "strict": true,
+    "noEmitOnError": true,
+    "noEmit": true
+  },
+  "include": ["plugin/main.ts"]
+}

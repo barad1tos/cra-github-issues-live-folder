@@ -3,7 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test"
+    "typecheck": "tsc --project tsconfig.json",
+    "test": "node --test",
+    "package": "node scripts/package.mjs"
   },
   "devDependencies": {
     "typescript": "7.0.2"
