@@ -57,11 +57,12 @@ function plainTitle(value: string): string {
 
 function issueTab(value: unknown, login: string): IssueTab {
     const issue = record(value);
+    const number = issue?.number ?? issue?.num;
     const repository = record(record(issue?.repo)?.repository);
     if (!issue || !repository || !segment(repository.owner_login) || !segment(repository.name) ||
         repository.owner_login.toLowerCase() !== login || issue.state !== "open" ||
         record(record(issue.issue)?.issue)?.pull_request_id != null ||
-        !nonNegativeInteger(issue.num) || issue.num === 0 || typeof issue.hl_title !== "string") {
+        !nonNegativeInteger(number) || number === 0 || typeof issue.hl_title !== "string") {
         throw new Error("unexpectedPage");
     }
 
@@ -69,7 +70,7 @@ function issueTab(value: unknown, login: string): IssueTab {
     if (!title) throw new Error("unexpectedPage");
 
     const group = repository.owner_login + "/" + repository.name;
-    const url = github + "/" + group + "/issues/" + issue.num;
+    const url = github + "/" + group + "/issues/" + number;
     const created = typeof issue.created === "string" ? Date.parse(issue.created) : NaN;
     return {
         id: url,
@@ -91,7 +92,8 @@ function issuePayload(html: string): Record<string, unknown> {
             continue;
         }
         const payload = record(record(data)?.payload);
-        if (payload?.type === "issues") return payload;
+        const search = record(payload?.blackbirdSearchRoute) ?? payload;
+        if (search?.type === "issues") return search;
     }
     throw new Error("unexpectedPage");
 }

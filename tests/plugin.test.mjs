@@ -53,16 +53,17 @@ function issue(number, owner, name, assignees = []) {
  * @param {string} url
  * @param {string} login
  * @param {object[]} results
- * @param {{page?: number, pages?: number, count?: number}} [pagination]
+ * @param {{page?: number, pages?: number, count?: number, wrapped?: boolean}} [pagination]
  */
-function page(url, login, results, { page = 1, pages = 1, count = results.length } = {}) {
+function page(url, login, results, { page = 1, pages = 1, count = results.length, wrapped = false } = {}) {
     const payload = { type: "issues", logged_in: Boolean(login), results,
         page, page_count: pages, result_count: count, errors: [] };
+    const embeddedData = { payload: wrapped ? { blackbirdSearchRoute: payload } : payload };
     return {
         status: 200, url,
         body: '<meta name="user-login" content="' + login + '">' +
             '<script type="application/json" data-target="react-app.embeddedData">' +
-            JSON.stringify({ payload }) + "</script>",
+            JSON.stringify(embeddedData) + "</script>",
     };
 }
 
@@ -97,6 +98,20 @@ test("search uses the Space's viewer and keeps issues regardless of assignee acr
         assert.equal(items[0].title, "Update & review #1");
         assert.equal(items[0].createdAt, 1767225600);
     }
+});
+
+test("refresh reads issue numbers nested under blackbirdSearchRoute", () => {
+    const results = [
+        issue(1, "alex", "one"),
+        issue(2, "alex", "two", ["someone-else"]),
+    ].map(({ num, ...result }) => ({ ...result, number: num }));
+    const provider = loadProvider(url => page(url, "alex", results, { wrapped: true }));
+
+    const urls = Array.from(provider.refresh(input).items, item => item.url);
+    assert.deepEqual(urls, [
+        "https://github.com/alex/one/issues/1",
+        "https://github.com/alex/two/issues/2",
+    ]);
 });
 
 test("refresh reads every search page", () => {
